@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SecondView: View {
+struct GameOverView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -33,13 +33,41 @@ struct SecondView: View {
     }
 }
 
+
+struct WinView: View {
+    @Environment(\.presentationMode) var presentationMode
+
+    var body: some View {
+        ZStack {
+
+            VStack {
+                Image("youwin")
+
+                Button("Tap to restart") {
+                    self.presentationMode.wrappedValue.dismiss()
+                }
+                .padding()
+                .padding([.leading, .trailing], 40)
+                .foregroundColor(.white)
+                .background(Color(red: 0.9, green: 0.6, blue: 0.7))
+                .cornerRadius(25)
+                .font(.system(size: 18, weight: .bold, design: .default))
+
+            }
+
+
+        }
+    }
+}
+
 struct ContentView: View {
     
     @State var credits = 1000
     @State var slot1 = 1
     @State var slot2 = 1
     @State var slot3 = 1
-    @State private var showingAlert = false
+    @State private var showGameOver = false
+    @State private var showWin = false
 
     
     var body: some View {
@@ -76,39 +104,31 @@ struct ContentView: View {
                 slot3 = Int.random(in: 1...3)
                 
                 if slot1 == slot2 && slot2 == slot3 {
-                    credits += 200
+                    credits += 100
                 } else {
                     credits -= 50
                 }
                 
-                // GAME OVER
-                if credits <= 0 {
-                    credits = 0
-
-                    //show as a popup or as a new page GAME OVER
-//                    Button("Show Alert") {
-//                        self.showingAlert.toggle()
-//                    }
-//                    .sheet(isPresented: $showingAlert) {
-//                        SecondView()
-//                    }            .padding()
-//                        .padding([.leading, .trailing], 40)
-//                        .foregroundColor(.white)
-//                        .background(Color(red: 0.9, green: 0.6, blue: 0.7))
-//                        .cornerRadius(25)
-//                        .font(.system(size: 18, weight: .bold, design: .default))
+                // GAME OVER, WIN
+                if credits <= 800 {
+                    
+                    credits = 800
+                    
+                     self.showGameOver.toggle()
+                    
+                    credits = 1000
                     
                 }
                 
-                // WINNER
-                if credits >= 1500 {
-
-                    //show as a popup or as a new page  YOU ARE THE WINNER
+                if credits >= 1100 {
                     
-                    //show NEW GAME button
+                    credits = 1100
 
+                    self.showWin.toggle()
+                    
+                    credits = 1000
+                    
                 }
-                
             }
             .padding()
             .padding([.leading, .trailing], 40)
@@ -118,19 +138,16 @@ struct ContentView: View {
             .font(.system(size: 18, weight: .bold, design: .default))
             Spacer()
             
+            //calling Game Over View
+            .sheet(isPresented: $showGameOver) {
+                GameOverView()
+            }
+                
+            //calling Win View
+            .sheet(isPresented: $showWin) {
+                WinView()
+            }
             
-            Button("Show Second View") {
-                self.showingAlert.toggle()
-            }
-            .sheet(isPresented: $showingAlert) {
-                SecondView()
-            }
-            .padding()
-            .padding([.leading, .trailing], 40)
-            .foregroundColor(Color(red: 0.9, green: 0.6, blue: 0.7))
-            .background(Color(.white))
-            .cornerRadius(25)
-            .font(.system(size: 18, weight: .bold, design: .default))
         }
     }
 }
