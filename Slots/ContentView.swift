@@ -27,8 +27,6 @@ struct GameOverView: View {
                 .font(.system(size: 18, weight: .bold, design: .default))
                 
             }
-            
-
         }
     }
 }
@@ -54,8 +52,6 @@ struct WinView: View {
                 .font(.system(size: 18, weight: .bold, design: .default))
 
             }
-
-
         }
     }
 }
@@ -66,6 +62,7 @@ struct ContentView: View {
     @State var slot1 = 1
     @State var slot2 = 1
     @State var slot3 = 1
+    @State var state = 0
     @State private var showGameOver = false
     @State private var showWin = false
 
@@ -104,17 +101,23 @@ struct ContentView: View {
                 slot3 = Int.random(in: 1...3)
                 
                 if slot1 == slot2 && slot2 == slot3 {
+                    
                     credits += 100
+                    
                 } else {
+                    
                     credits -= 50
+                    
                 }
                 
-                // GAME OVER, WIN
+                                    // when the GAME is OVER or WIN
                 if credits <= 800 {
                     
-                    credits = 800
+                    self.state = 1
                     
-                     self.showGameOver.toggle()
+                    credits = 800
+
+                    self.showWin.toggle()
                     
                     credits = 1000
                     
@@ -122,12 +125,13 @@ struct ContentView: View {
                 
                 if credits >= 1100 {
                     
+                    self.state = 2
+                    
                     credits = 1100
 
                     self.showWin.toggle()
                     
                     credits = 1000
-                    
                 }
             }
             .padding()
@@ -138,16 +142,18 @@ struct ContentView: View {
             .font(.system(size: 18, weight: .bold, design: .default))
             Spacer()
             
-            //calling Game Over View
-            .sheet(isPresented: $showGameOver) {
-                GameOverView()
+                                                //calling Views
+                .sheet(isPresented: $showWin) {
+                    if state == 1 {
+                        
+                        GameOverView()
+                        
+                    } else if state == 2 {
+                        
+                        WinView()
+                        
+                    }
             }
-                
-            //calling Win View
-            .sheet(isPresented: $showWin) {
-                WinView()
-            }
-            
         }
     }
 }
